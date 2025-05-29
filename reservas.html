@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Reservas - Sistema de Reservas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-list-check"></i> Minhas Reservas</h2>
+    <a href="{{ url_for('reservar') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Nova Reserva
+    </a>
+</div>
+
+{% if reservas %}
+<div class="row">
+    {% for reserva in reservas %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ reserva.sala.nome }}</h5>
+                <p class="card-text">
+                    <i class="bi bi-calendar"></i> {{ reserva.data_hora_inicio.strftime('%d/%m/%Y %H:%M') }} - {{
+                    reserva.data_hora_fim.strftime('%H:%M') }}
+                </p>
+                {% if reserva.recurso %}
+                <p class="card-text">
+                    <i class="bi bi-tools"></i> Recurso: {{ reserva.recurso.nome }}
+                </p>
+                {% endif %}
+                <div class="d-flex justify-content-end mt-3">
+                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#deleteModal{{ reserva.id }}">
+                        <i class="bi bi-trash"></i> Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="modal fade" id="deleteModal{{ reserva.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza que deseja excluir esta reserva?
+                    <p class="mt-2">
+                        <strong>Sala:</strong> {{ reserva.sala.nome }}<br>
+                        <strong>Data:</strong> {{ reserva.data_hora_inicio.strftime('%d/%m/%Y') }}<br>
+                        <strong>Horário:</strong> {{ reserva.data_hora_inicio.strftime('%H:%M') }} - {{
+                        reserva.data_hora_fim.strftime('%H:%M') }}
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form action="{{ url_for('excluir_reserva', reserva_id=reserva.id) }}" method="post"
+                        class="d-inline">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Confirmar Exclusão
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i> Você ainda não tem reservas.
+</div>
+{% endif %}
+{% endblock %}
